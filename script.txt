@@ -1,0 +1,61 @@
+#mp4 mp3
+
+import tkinter as tk
+from tkinter import messagebox
+from pytube import YouTube
+import os
+
+def descargar(url, formato):
+    try:
+        # Crear un objeto YouTube
+        yt = YouTube(url)
+
+        if formato == "mp4":
+            # Obtener la mejor resolución disponible para el video
+            video_stream = yt.streams.get_highest_resolution()
+            # Descargar el video
+            video_stream.download()
+            messagebox.showinfo("Éxito", "Descarga de video exitosa!")
+        elif formato == "mp3":
+            # Obtener la mejor calidad de audio disponible
+            audio_stream = yt.streams.filter(only_audio=True).first()
+            # Descargar el audio en formato mp3
+            audio_stream.download(filename=os.path.splitext(yt.title)[0] + ".mp3")
+            messagebox.showinfo("Éxito", "Descarga de audio exitosa!")
+
+        # Borrar el contenido del campo de entrada
+        entry_url.delete(0, tk.END)
+
+    except Exception as e:
+        messagebox.showerror("Error", f"Error: {e}")
+
+# Crear la ventana principal
+ventana = tk.Tk()
+ventana.title("HADES0413//MP4/MP3")
+
+# Etiqueta y entrada para la URL
+label_url = tk.Label(ventana, text="URL del video o lista de reproducción:")
+label_url.pack()
+
+entry_url = tk.Entry(ventana, width=70)
+entry_url.pack()
+
+# Elección del formato
+label_formato = tk.Label(ventana, text="Selecciona el formato:")
+label_formato.pack()
+
+format_choice = tk.StringVar(ventana)
+format_choice.set("mp4")
+
+radio_mp4 = tk.Radiobutton(ventana, text="mp4", variable=format_choice, value="mp4")
+radio_mp4.pack()
+
+radio_mp3 = tk.Radiobutton(ventana, text="mp3", variable=format_choice, value="mp3")
+radio_mp3.pack()
+
+# Botón de descarga
+boton_descargar = tk.Button(ventana, text="Descargar", command=lambda: descargar(entry_url.get(), format_choice.get()))
+boton_descargar.pack()
+
+# Ejecutar la interfaz
+ventana.mainloop()
